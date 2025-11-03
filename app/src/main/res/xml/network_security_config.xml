@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config xmlns:tools="http://schemas.android.com/tools">
+    <base-config>
+        <trust-anchors>
+            <certificates src="system"/>
+        </trust-anchors>
+    </base-config>
+
+    <domain-config tools:ignore="NetworkSecurityConfig">
+        <domain include-subdomains="true">www.smartraveller.gov.au</domain>
+        <trusts-anchors>
+            <certificates src="system"/>
+        </trusts-anchors>
+    </domain-config>
+
+</network-security-config>
