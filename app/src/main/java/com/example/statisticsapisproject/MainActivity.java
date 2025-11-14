@@ -48,6 +48,8 @@ public class MainActivity extends AppCompatActivity implements CallBack
             {
                 String country = editTextCountry.getText().toString();
 
+                country = adjustments(country);
+
                 try
                 {
                     conditionAPI.getConditions(country, MainActivity.this, MainActivity.this);
@@ -65,12 +67,16 @@ public class MainActivity extends AppCompatActivity implements CallBack
     @Override
     public void onSuccess(String conditions)
     {
+        levelView.setVisibility(View.VISIBLE);
         Gson gson = new Gson();
         Condition condition = null;
 
         if(conditions != null && !conditions.isEmpty())
         {
             condition = gson.fromJson(conditions, Condition.class);
+
+            condition.setField_last_update(corrections(condition.getField_last_update()));
+
             if(condition.getField_overall_advice_level().equals("Exercise a high degree of caution"))
             {
                 levelView.setImageResource(R.drawable.level2);
@@ -114,6 +120,8 @@ public class MainActivity extends AppCompatActivity implements CallBack
             else
             {
                 conditionView.setText("No conditions found for this country or it doesn't exist. Make sure you're typing the country's name correctly.");
+                urlView.setText("");
+                levelView.setVisibility(View.INVISIBLE);
             }
         }
     }
@@ -129,5 +137,35 @@ public class MainActivity extends AppCompatActivity implements CallBack
     public void onFailure(String error)
     {
         conditionView.setText("An error as occured.");
+    }
+
+    public String adjustments(String country)
+    {
+        if(country.equals("North Korea"))
+        {
+            country = "North Korea (Democratic People&#039;s Republic of Korea)";
+        }
+
+        if(country.equals("South Korea"))
+        {
+            country = "South Korea (Republic of Korea)";
+        }
+
+        if(country.equals("US") || country.equals("United States") || country.equals("USA"))
+        {
+            country = "United States of America";
+        }
+
+        if(country.equals("England") || country.equals("Great Britain") || country.equals("UK") || country.equals("Britain"))
+        {
+            country = "United Kingdom";
+        }
+
+        return country;
+    }
+
+    public String corrections(String conditionUpdate)
+    {
+        return conditionUpdate.replace("&amp;**", "'");
     }
 }

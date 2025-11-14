@@ -11,6 +11,7 @@ import com.google.gson.reflect.TypeToken;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -18,9 +19,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.lang.reflect.Type;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -39,7 +42,6 @@ public class ConditionAPI implements CallBack
 {
     private String conditionMet = "";
     private static final String fileName = "conditions.json";
-    private long timePassed = 1000 * 60 * 60 * 24;
     private APIService apiService;
     private final String baseUrl = "https://www.smartraveller.gov.au/";
 
@@ -74,7 +76,7 @@ public class ConditionAPI implements CallBack
 
     public void getConditions(String country, Context context, CallBack callBack) throws IOException
     {
-        if(System.currentTimeMillis() - readTimeStamp(context) > timePassed)
+        if(checkTimeStamp(context))
         {
             Log.d("APIDebug", "Processing the data..");
             apiService.getConditions().enqueue(new Callback<String>()
@@ -98,7 +100,6 @@ public class ConditionAPI implements CallBack
                                 Log.d("APIDebug ", "First condition was set "  + conditionsList);
 
                                 writeData(conditions, context);
-                                writeTimeStamp(context);
 
                                 for(Condition condition : conditionsList)
                                 {
@@ -190,18 +191,21 @@ public class ConditionAPI implements CallBack
         }
     }
 
-    public void writeTimeStamp(Context context)
+    public boolean checkTimeStamp(Context context)
     {
-        SharedPreferences sharedPreferences = context.getSharedPreferences("sharedPreferences", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putLong("timeStamp", System.currentTimeMillis());
-        editor.apply();
-    }
+        File file = context.getFileStreamPath(fileName);
 
-    public long readTimeStamp(Context context)
-    {
-        SharedPreferences sharedPreferences = context.getSharedPreferences("sharedPreferences", Context.MODE_PRIVATE);
-        return sharedPreferences.getLong("timeStamp", 0);
+        if(file.exists())
+        {
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
+            String lastModifiedDate = dateFormat.format(new Date(file.lastModified()));
+            String currentDate = dateFormat.format(new Date(System.currentTimeMillis()));
+
+            return !lastModifiedDate.equals(currentDate);
+        }
+
+        return true;
     }
 
     public List<Condition> readData(Context context) throws IOException
