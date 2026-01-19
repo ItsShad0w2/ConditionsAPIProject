@@ -141,22 +141,23 @@ public class MainActivity extends AppCompatActivity implements CallBack
 
     public String adjustments(String country)
     {
-        if(country.equals("North Korea"))
+        country = country.toLowerCase();
+        if(country.equals("north korea"))
         {
             country = "North Korea (Democratic People&#039;s Republic of Korea)";
         }
 
-        if(country.equals("South Korea"))
+        if(country.equals("south korea"))
         {
             country = "South Korea (Republic of Korea)";
         }
 
-        if(country.equals("US") || country.equals("United States") || country.equals("USA"))
+        if(country.equals("us") || country.equals("united states") || country.equals("usa"))
         {
             country = "United States of America";
         }
 
-        if(country.equals("England") || country.equals("Great Britain") || country.equals("UK") || country.equals("Britain"))
+        if(country.equals("england") || country.equals("great britain") || country.equals("uk") || country.equals("britain"))
         {
             country = "United Kingdom";
         }
