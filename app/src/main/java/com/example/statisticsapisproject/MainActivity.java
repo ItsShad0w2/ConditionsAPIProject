@@ -138,10 +138,18 @@ public class MainActivity extends AppCompatActivity implements CallBack
     {
         conditionView.setText("An error as occured.");
     }
+    public String removeEndSpaces(String string)
+    {
+        while(string.charAt(string.length()-1) == ' ')
+        {
+            string = string.substring(0,string.length()-1);
+        }
 
+        return string;
+    }
     public String adjustments(String country)
     {
-        country = country.toLowerCase();
+        country = removeEndSpaces(country.toLowerCase());
         if(country.equals("north korea"))
         {
             country = "North Korea (Democratic People&#039;s Republic of Korea)";
